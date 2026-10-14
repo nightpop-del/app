@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7d5b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="แอปครูแจ๋ว">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>ศูนย์รวมแอป บ้านครูแจ๋ว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<style>
+/* Layout: หัวหน้าเรียบ + ช่องค้นหา แล้วแบ่งแอปเป็น 3 กลุ่มตามการใช้งานจริง (งานครู / เทอมปกติ / คอร์สพิเศษ) */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --fg:#1d2420; --muted:#5f6b64; --line:#dde2dc;
+  --accent:#2f7d5b; --accent-soft:#e3f0e9; --chalk:#1f3a2f;
+  --g1:#2f7d5b; --g2:#3b6ea8; --g3:#b5652a;
+  --font-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Thai","Sarabun",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --surface:#1c2320; --fg:#e7ece8; --muted:#9aa8a0; --line:#2c3531;
+  --accent:#6cc79c; --accent-soft:#1f3329; --chalk:#0f1512;
+  --g1:#6cc79c; --g2:#7fa9de; --g3:#e39a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1c2320; --fg:#e7ece8; --muted:#9aa8a0; --line:#2c3531;
+  --accent:#6cc79c; --accent-soft:#1f3329; --chalk:#0f1512;
+  --g1:#6cc79c; --g2:#7fa9de; --g3:#e39a62; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--font-display);font-size:30px;line-height:1.2;margin:2px 0 0;text-wrap:balance}
+.today{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tools{display:flex;gap:10px;flex-wrap:wrap;width:100%}
+.search{flex:1 1 240px;min-width:0;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 12px}
+.search input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:inherit;padding:11px 0;outline:none}
+.search:focus-within{border-color:var(--accent)}
+.kbd{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:10px 14px}
+.btn:hover{border-color:var(--accent)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn:focus-visible,.app:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:12px}
+.sec-head{display:flex;align-items:center;gap:10px}
+.sec-head h2{font-family:var(--font-display);font-size:17px;margin:0}
+.dot{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.sec-head .count{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.app{position:relative;display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:border-color .15s,transform .15s}
+a.app:hover{border-color:var(--c);transform:translateY(-1px)}
+.badge{flex:none;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;
+  font-size:15px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);font-variant-numeric:tabular-nums}
+.info{min-width:0;flex:1;display:flex;flex-direction:column}
+.name{font-weight:600;font-size:15.5px}
+.desc{font-size:13px;color:var(--muted)}
+.nolink{font-size:12px;color:var(--g3)}
+.app.missing{border-style:dashed}
+.urlbox{margin-top:6px;width:100%;font:inherit;font-size:12.5px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--fg)}
+.key{position:absolute;top:8px;right:10px;font-size:11px;color:var(--muted)}
+.editbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:13.5px}
+.editbar p{margin:0;flex:1 1 260px}
+.empty{color:var(--muted);font-size:14px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){.app{transition:none}a.app:hover{transform:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">App กวดวิชา</div>
+      <h1>ศูนย์รวมแอป บ้านครูแจ๋ว</h1>
+    </div>
+    <div class="today" id="today"></div>
+    <div class="tools">
+      <label class="search" for="q">
+        <input id="q" type="search" placeholder="ค้นหาแอป เช่น ติวโค้ง, คะแนน" autocomplete="off">
+        <span class="kbd">/</span>
+      </label>
+      <button class="btn" id="editBtn" type="button">แก้ไขลิงก์</button>
+    </div>
+  </header>
+
+  <div class="editbar" id="editbar" hidden>
+    <p>วางลิงก์ /exec ของแต่ละแอปในช่องใต้ชื่อ ระบบบันทึกในเบราว์เซอร์นี้ทันที กด "คัดลอกรายการลิงก์" แล้วส่งให้ Claude เพื่อฝังลิงก์ลงหน้าถาวร</p>
+    <button class="btn" id="copyBtn" type="button">คัดลอกรายการลิงก์</button>
+    <button class="btn" id="doneBtn" type="button">เสร็จแล้ว</button>
+  </div>
+
+  <div id="groups"></div>
+  <p class="empty" id="empty" hidden>ไม่พบแอปที่ตรงกับคำค้น</p>
+
+  <footer>กดตัวเลข 1–8 เพื่อเปิดแอปได้ทันที · กด / เพื่อค้นหา · ลิงก์เปิดในแท็บใหม่</footer>
+</div>
+
+<script>
+const GROUPS = [
+  {id:"teach", title:"งานครู", color:"--g1"},
+  {id:"term", title:"เทอม 1-2", color:"--g2"},
+  {id:"special", title:"คอร์สพิเศษ", color:"--g3"},
+];
+// ลิงก์ที่ฝังไว้ (แก้ได้ในโหมด "แก้ไขลิงก์")
+const APPS = [
+  {id:"docs", g:"teach", short:"เอก", name:"ตามเอกสาร ครู", desc:"สถานะส่งเอกสารสอน แยกวิชา/ชั้น",
+   url:"https://script.google.com/macros/s/AKfycbyRSSf0s1d4SwdpBQLBmBzKar8xc6sCg4wMcDU4t38DSk9z-kRMouUTMtXhILNYx3Vp6g/exec"},
+  {id:"schedule", g:"teach", short:"ตาร", name:"ตารางสอน", desc:"เทอม 1-2 · rush · ติว 7 วัน · ติว 10 วัน · summer", url:"https://script.google.com/macros/s/AKfycby1Ifj9TlrBRiZtARhiokWhgG80kF6AeApQ_pwkdhuWy-bQ5XTsbAVnGaAKHudNLoxT/exec"},
+  {id:"students", g:"term", short:"นร.", name:"นักเรียน เทอม 1-2", desc:"รายชื่อและการเงินนักเรียน",
+   url:"https://script.google.com/macros/s/AKfycby6YmaB5OW6jlmnh3o8sO_Qg7GGw6-RGGtoW_Ckc0hWoJZjaeZrX4BQWAchj2I97kbu/exec"},
+  {id:"scores", g:"term", short:"คะ", name:"คะแนน เทอม 1-2", desc:"สมุดคะแนนสอบนักเรียน", url:"https://script.google.com/macros/s/AKfycbw0pgHJkjwoXUL9IjFmzOWni3hs9OHKU3GtzlN323Cuzy_cwk-RlXrhSHTQOaWU1MvM/exec"},
+  {id:"rush", g:"special", short:"RH", name:"Rush hour", desc:"รายชื่อนักเรียนคอร์ส Rush hour", url:"https://script.google.com/macros/s/AKfycbwm8u8VCTBevAtP2rXmrvF8sUu73RMfSoTPWTCcNrNGzfd25r-tZdGMocdMumlsr1Bj/exec"},
+  {id:"tiu7", g:"special", short:"7", name:"ติวโค้ง 7 วัน", desc:"รายชื่อนักเรียนติวโค้ง 7 วัน", url:"https://script.google.com/macros/s/AKfycbzqS9598pRgDIbBwvDFr-MpNSMRIUqZUvanBItGuekrYebI2GUth4fFFp7aRBjV5uPElQ/exec"},
+  {id:"tiu10", g:"special", short:"10", name:"ติวโค้ง 10 วัน", desc:"รายชื่อนักเรียนติวโค้ง 10 วัน", url:"https://script.google.com/macros/s/AKfycbz5CLI7NC12RM5FAC9bJaGDTBeJ4JzVqWi9v37DVodLoOkg6KoT-gnyUydhZu19u_yaEw/exec"},
+  {id:"tiu10score", g:"special", short:"คะ", name:"คะแนนสอบ ติวโค้ง 10 วัน", desc:"บันทึกคะแนนสอบคอร์สติวโค้ง", url:"https://script.google.com/macros/s/AKfycbwpGdhFdwfY7E_CWf7gRwF1ztcm4bCc-a6oTXVqFsLcNaTV6gcOWrXaJSM7yDjxJ2ebXw/exec"},
+];
+const KEY = "hub-urls-v1";
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { saved = {}; }
+const urlOf = a => (saved[a.id] || a.url || "").trim();
+let editing = false;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){
+  const q = $("#q").value.trim().toLowerCase();
+  let shown = 0, html = "";
+  GROUPS.forEach(g => {
+    const list = APPS.map((a,i)=>({...a,n:i+1})).filter(a => a.g===g.id && (!q || (a.name+" "+a.desc).toLowerCase().includes(q)));
+    if(!list.length) return;
+    shown += list.length;
+    html += `<section style="--c:var(${g.color})"><div class="sec-head"><span class="dot"></span><h2>${g.title}</h2><span class="count">${list.length} แอป</span></div><div class="grid">`;
+    list.forEach(a => {
+      const u = urlOf(a);
+      const inner = `<span class="badge">${esc(a.short)}</span><span class="info"><span class="name">${esc(a.name)}</span><span class="desc">${esc(a.desc)}</span>${
+        editing ? `<input class="urlbox" id="url-${a.id}" data-id="${a.id}" type="url" placeholder="วางลิงก์ https://script.google.com/.../exec" value="${esc(u)}">`
+        : (u ? "" : `<span class="nolink">ยังไม่ได้ใส่ลิงก์ · กด "แก้ไขลิงก์"</span>`)}</span><span class="key">${a.n}</span>`;
+      html += (u && !editing)
+        ? `<a class="app" href="${esc(u)}" target="_blank" rel="noopener">${inner}</a>`
+        : `<div class="app${u?"":" missing"}">${inner}</div>`;
+    });
+    html += `</div></section>`;
+  });
+  $("#groups").innerHTML = html;
+  $("#empty").hidden = shown > 0;
+}
+
+function setEdit(on){
+  editing = on; $("#editbar").hidden = !on;
+  $("#editBtn").classList.toggle("on", on);
+  $("#editBtn").textContent = on ? "กำลังแก้ไข" : "แก้ไขลิงก์";
+  render();
+}
+
+$("#groups").addEventListener("input", e => {
+  const id = e.target.dataset && e.target.dataset.id; if(!id) return;
+  saved[id] = e.target.value.trim();
+  try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch(err) {}
+});
+$("#editBtn").onclick = () => setEdit(!editing);
+$("#doneBtn").onclick = () => setEdit(false);
+$("#copyBtn").onclick = async () => {
+  const txt = APPS.map(a => `${a.name}: ${urlOf(a) || "-"}`).join("\n");
+  const b = $("#copyBtn");
+  try { await navigator.clipboard.writeText(txt); b.textContent = "คัดลอกแล้ว"; }
+  catch(e){ b.textContent = "คัดลอกไม่ได้ — เลือกข้อความเอง"; const t=document.createElement("textarea"); t.value=txt; t.className="urlbox"; t.rows=8; $("#editbar").appendChild(t); t.select(); }
+  setTimeout(()=> b.textContent = "คัดลอกรายการลิงก์", 1800);
+};
+$("#q").addEventListener("input", render);
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="textarea") { if(e.key==="Escape") e.target.blur(); return; }
+  if(e.key==="/"){ e.preventDefault(); $("#q").focus(); return; }
+  const n = parseInt(e.key,10);
+  if(n>=1 && n<=APPS.length && !editing){
+    const el = [...document.querySelectorAll(".app")].find(x => x.querySelector(".key").textContent==String(n));
+    if(el && el.tagName==="A") el.click();
+  }
+});
+$("#today").textContent = new Date().toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+render();
+</script>
+</body></html>
