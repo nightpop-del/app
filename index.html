@@ -60,7 +60,10 @@ section{display:flex;flex-direction:column;gap:12px}
   border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:border-color .15s,transform .15s}
 a.app:hover{border-color:var(--c);transform:translateY(-1px)}
 .badge{flex:none;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;
-  font-size:15px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);font-variant-numeric:tabular-nums}
+  font-size:15px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);font-variant-numeric:tabular-nums;position:relative}
+.badge svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.badge .num{position:absolute;right:-7px;top:-7px;min-width:12px;height:16px;padding:0 3px;border-radius:9px;background:var(--c);color:var(--surface);
+font-size:10px;line-height:16px;text-align:center;border:2px solid var(--surface);box-sizing:content-box}
 .info{min-width:0;flex:1;display:flex;flex-direction:column}
 .name{font-weight:600;font-size:15.5px}
 .desc{font-size:13px;color:var(--muted)}
@@ -113,19 +116,32 @@ const GROUPS = [
 ];
 // ลิงก์ที่ฝังไว้ (แก้ได้ในโหมด "แก้ไขลิงก์")
 const APPS = [
-  {id:"docs", g:"teach", short:"เอก", name:"ระบบ เริ่มต้น - เปิดเทอม", desc:"สถานะส่งเอกสารสอน แยกวิชา/ชั้น",
+  {id:"docs", g:"teach", short:"เอก", icon:"doc", name:"ระบบ เริ่มต้น - เปิดเทอม", desc:"สถานะส่งเอกสารสอน แยกวิชา/ชั้น",
    url:"https://script.google.com/macros/s/AKfycbyRSSf0s1d4SwdpBQLBmBzKar8xc6sCg4wMcDU4t38DSk9z-kRMouUTMtXhILNYx3Vp6g/exec"},
-  {id:"schedule", g:"teach", short:"ตาร", name:"ตารางสอน", desc:"เทอม 1-2 · rush · ติว 7 วัน · ติว 10 วัน · summer", url:"https://script.google.com/macros/s/AKfycby1Ifj9TlrBRiZtARhiokWhgG80kF6AeApQ_pwkdhuWy-bQ5XTsbAVnGaAKHudNLoxT/exec"},
-  {id:"leave", g:"teach", short:"ลา", name:"ระบบลาครู", desc:"บันทึกและติดตามการลาของครู",
+  {id:"schedule", g:"teach", short:"ตาร", icon:"calendar", name:"ตารางสอน", desc:"เทอม 1-2 · rush · ติว 7 วัน · ติว 10 วัน · summer", url:"https://script.google.com/macros/s/AKfycby1Ifj9TlrBRiZtARhiokWhgG80kF6AeApQ_pwkdhuWy-bQ5XTsbAVnGaAKHudNLoxT/exec"},
+  {id:"leave", g:"teach", short:"ลา", icon:"leave", name:"ระบบลาครู", desc:"บันทึกและติดตามการลาของครู",
    url:"https://script.google.com/macros/s/AKfycbxQB4rkFoskHS9JOnXv5X9jYvWOlA6-CLPcG3buTNUVuzlEfz63nKxoQyJIwQycU7DY/exec"},
-  {id:"students", g:"term", short:"นร.", name:"นักเรียน เทอม 1-2", desc:"รายชื่อและการเงินนักเรียน",
+  {id:"students", g:"term", short:"นร.", icon:"users", name:"นักเรียน เทอม 1-2", desc:"รายชื่อและการเงินนักเรียน",
    url:"https://script.google.com/macros/s/AKfycby6YmaB5OW6jlmnh3o8sO_Qg7GGw6-RGGtoW_Ckc0hWoJZjaeZrX4BQWAchj2I97kbu/exec"},
-  {id:"scores", g:"term", short:"คะ", name:"คะแนน เทอม 1-2", desc:"สมุดคะแนนสอบนักเรียน", url:"https://script.google.com/macros/s/AKfycbw0pgHJkjwoXUL9IjFmzOWni3hs9OHKU3GtzlN323Cuzy_cwk-RlXrhSHTQOaWU1MvM/exec"},
-  {id:"rush", g:"special", short:"RH", name:"Rush hour", desc:"รายชื่อนักเรียนคอร์ส Rush hour", url:"https://script.google.com/macros/s/AKfycbwm8u8VCTBevAtP2rXmrvF8sUu73RMfSoTPWTCcNrNGzfd25r-tZdGMocdMumlsr1Bj/exec"},
-  {id:"tiu7", g:"special", short:"7", name:"ติวโค้ง 7 วัน", desc:"รายชื่อนักเรียนติวโค้ง 7 วัน", url:"https://script.google.com/macros/s/AKfycbzqS9598pRgDIbBwvDFr-MpNSMRIUqZUvanBItGuekrYebI2GUth4fFFp7aRBjV5uPElQ/exec"},
-  {id:"tiu10", g:"special", short:"10", name:"ติวโค้ง 10 วัน", desc:"รายชื่อนักเรียนติวโค้ง 10 วัน", url:"https://script.google.com/macros/s/AKfycbz5CLI7NC12RM5FAC9bJaGDTBeJ4JzVqWi9v37DVodLoOkg6KoT-gnyUydhZu19u_yaEw/exec"},
-  {id:"tiu10score", g:"special", short:"คะ", name:"คะแนนสอบ ติวโค้ง 10 วัน", desc:"บันทึกคะแนนสอบคอร์สติวโค้ง", url:"https://script.google.com/macros/s/AKfycbwpGdhFdwfY7E_CWf7gRwF1ztcm4bCc-a6oTXVqFsLcNaTV6gcOWrXaJSM7yDjxJ2ebXw/exec"},
+  {id:"scores", g:"term", short:"คะ", icon:"chart", name:"คะแนน เทอม 1-2", desc:"สมุดคะแนนสอบนักเรียน", url:"https://script.google.com/macros/s/AKfycbw0pgHJkjwoXUL9IjFmzOWni3hs9OHKU3GtzlN323Cuzy_cwk-RlXrhSHTQOaWU1MvM/exec"},
+  {id:"rush", g:"special", short:"RH", icon:"zap", name:"Rush hour", desc:"รายชื่อนักเรียนคอร์ส Rush hour", url:"https://script.google.com/macros/s/AKfycbwm8u8VCTBevAtP2rXmrvF8sUu73RMfSoTPWTCcNrNGzfd25r-tZdGMocdMumlsr1Bj/exec"},
+  {id:"tiu7", g:"special", short:"7", icon:"target", num:"7", name:"ติวโค้ง 7 วัน", desc:"รายชื่อนักเรียนติวโค้ง 7 วัน", url:"https://script.google.com/macros/s/AKfycbzqS9598pRgDIbBwvDFr-MpNSMRIUqZUvanBItGuekrYebI2GUth4fFFp7aRBjV5uPElQ/exec"},
+  {id:"tiu10", g:"special", short:"10", icon:"target", num:"10", name:"ติวโค้ง 10 วัน", desc:"รายชื่อนักเรียนติวโค้ง 10 วัน", url:"https://script.google.com/macros/s/AKfycbz5CLI7NC12RM5FAC9bJaGDTBeJ4JzVqWi9v37DVodLoOkg6KoT-gnyUydhZu19u_yaEw/exec"},
+  {id:"tiu10score", g:"special", short:"คะ", icon:"award", num:"10", name:"คะแนนสอบ ติวโค้ง 10 วัน", desc:"บันทึกคะแนนสอบคอร์สติวโค้ง", url:"https://script.google.com/macros/s/AKfycbwpGdhFdwfY7E_CWf7gRwF1ztcm4bCc-a6oTXVqFsLcNaTV6gcOWrXaJSM7yDjxJ2ebXw/exec"},
 ];
+// ไอคอนหัวแอปย่อย (เส้นแบบ Lucide) — เพิ่มไอคอนใหม่ได้ที่นี่ แล้วใส่ชื่อใน icon:"..." ของแอป
+const ICONS = {
+doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>',
+leave:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m14 14-4 4"/><path d="m10 14 4 4"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+chart:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+zap:'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+award:'<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+};
+const badgeOf = a => (ICONS[a.icon] ? `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[a.icon]}</svg>` : esc(a.short))
+  + (a.num ? `<span class="num">${esc(a.num)}</span>` : "");
 const KEY = "hub-urls-v1";
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { saved = {}; }
@@ -145,7 +161,7 @@ function render(){
     html += `<section style="--c:var(${g.color})"><div class="sec-head"><span class="dot"></span><h2>${g.title}</h2><span class="count">${list.length} แอป</span></div><div class="grid">`;
     list.forEach(a => {
       const u = urlOf(a);
-      const inner = `<span class="badge">${esc(a.short)}</span><span class="info"><span class="name">${esc(a.name)}</span><span class="desc">${esc(a.desc)}</span>${
+      const inner = `<span class="badge">${badgeOf(a)}</span><span class="info"><span class="name">${esc(a.name)}</span><span class="desc">${esc(a.desc)}</span>${
         editing ? `<input class="urlbox" id="url-${a.id}" data-id="${a.id}" type="url" placeholder="วางลิงก์ https://script.google.com/.../exec" value="${esc(u)}">`
         : (u ? "" : `<span class="nolink">ยังไม่ได้ใส่ลิงก์ · กด "แก้ไขลิงก์"</span>`)}</span><span class="key">${a.n}</span>`;
       html += (u && !editing)
